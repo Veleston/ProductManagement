@@ -16,7 +16,11 @@ class AuthController extends Controller
             $payload = JWTAuth::setToken($token)->getPayload();
             $payloadData = $payload->toArray();
             if (isset($payloadData['roles']) && !empty($payloadData['roles'])) {
-                return response()->json(['token' => $token, 'message' => "Logged in successfully!"], 201);
+                if (in_array("store_manager", $payloadData['roles'])) {
+                    return response()->json(['token' => $token, 'message' => "Logged in successfully!"], 201);
+                } else {
+                    return response()->json(['status' => 'error', 'message' => "Unauthorized"], 403);
+                }
             } else {
                 return response()->json(['status' => 'error', 'message' => "Unauthorized"], 403);
             }
